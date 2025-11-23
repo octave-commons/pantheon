@@ -17,6 +17,7 @@ dist/
 build/
 out/
 target/
+tsconfig.tsbuildinfo
 *.tgz
 *.tar.gz
 
