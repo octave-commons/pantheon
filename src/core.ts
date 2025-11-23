@@ -1,4 +1,4 @@
 /**
  * Core exports for Pantheon
  */
-export * from '../core/dist/index.js';
+export * from '@promethean-os/pantheon-core';

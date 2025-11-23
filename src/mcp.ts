@@ -11,4 +11,4 @@ export {
   type MCPToolPort,
   type MCPTool,
   type MCPToolResult,
-} from '../mcp/dist/index.js';
+} from '@promethean-os/pantheon-mcp';

@@ -7,4 +7,4 @@ export {
   type PersistenceAdapterDeps,
   type CacheConfig,
   type CacheMetrics,
-} from '../persistence/dist/index.js';
+} from '@promethean-os/pantheon-persistence';

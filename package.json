@@ -19,6 +19,14 @@
     "lint": "pnpm exec eslint ."
   },
   "dependencies": {
+    "@promethean-os/pantheon-core": "workspace:*",
+    "@promethean-os/pantheon-state": "workspace:*",
+    "@promethean-os/pantheon-workflow": "workspace:*",
+    "@promethean-os/pantheon-protocol": "workspace:*",
+    "@promethean-os/pantheon-persistence": "workspace:*",
+    "@promethean-os/pantheon-mcp": "workspace:*",
+    "@promethean-os/pantheon-orchestrator": "workspace:*",
+    "@promethean-os/pantheon-ecs": "workspace:*",
     "commander": "^11.1.0",
     "jsonwebtoken": "^9.0.2",
     "zod": "^3.22.4"

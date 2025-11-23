@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "shadow-cljs release",
+    "build": "echo \"skip pantheon-generator build (no shadow-cljs build configured)\"",
     "dev": "shadow-cljs watch",
     "test": "shadow-cljs compile test && node out/test.js"
   },

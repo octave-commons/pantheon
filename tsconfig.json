@@ -32,6 +32,8 @@
     "target": "esnext",
     "useDefineForClassFields": true,
     "baseUrl": ".",
+    "rootDir": "src",
+    "outDir": "dist",
     "paths": {
       "@shared/ts/*": ["../shared/ts/dist/*"],
       "@promethean/test-utils/*": ["../packages/test-utils/dist/*"],
@@ -41,5 +43,6 @@
     },
     "types": ["node", "ava"]
   },
-  "exclude": ["../**/dist", "../**/node_modules"]
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules", "packages/**"]
 }
