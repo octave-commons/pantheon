@@ -16,6 +16,7 @@
     "strict": true,
     "allowArbitraryExtensions": false,
     "allowImportingTsExtensions": false,
+    "composite": true,
     "declaration": true,
     "declarationMap": true,
     "importHelpers": false,
