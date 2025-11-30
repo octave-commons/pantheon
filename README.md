@@ -13,6 +13,13 @@ Pantheon is a modular cognitive architecture that provides:
 - **Extensible Design**: Easy to add new providers, tools, and actor types
 - **CLI Interface**: 6 powerful commands for agent management and interaction
 
+## Where to go next
+
+- [Pantheon docs index](../../docs/pantheon-index.md)
+- [API reference](./docs/API.md)
+- [Pantheon graph pattern](./docs/graph-pattern.md)
+- [Functional migration suite](./docs/functional-migration-guide.md)
+
 ## 🚀 Quick Start
 
 ### Installation
@@ -763,12 +770,12 @@ GPL-3.0-only - see the [LICENSE](LICENSE) file for details.
 Made with ❤️ by the Promethean team
 
 <!-- READMEFLOW:BEGIN -->
+
 # @promethean-os/pantheon
 
 Pantheon Agent Management Framework — Complete framework with CLI, UI, and adapters
 
 [TOC]
-
 
 ## Install
 
@@ -793,19 +800,18 @@ pnpm -w add -D @promethean-os/pantheon
 - `coverage:check`
 - `lint`
 
-
 ### Package graph
 
 ### Pantheon dependency graph
+
 See [Pantheon Graph Pattern](docs/graph-pattern.md) for the maintained dependency view.
-
-
 
 ## Promethean Packages (Remote READMEs)
 
 - Back to [riatzukiza/promethean](https://github.com/riatzukiza/promethean#readme)
 
 <!-- BEGIN: PROMETHEAN-PACKAGES-READMES -->
+
 - [riatzukiza/agent-os-protocol](https://github.com/riatzukiza/agent-os-protocol#readme)
 - [riatzukiza/ai-learning](https://github.com/riatzukiza/ai-learning#readme)
 - [riatzukiza/apply-patch](https://github.com/riatzukiza/apply-patch#readme)
@@ -842,6 +848,5 @@ See [Pantheon Graph Pattern](docs/graph-pattern.md) for the maintained dependenc
 - [riatzukiza/utils](https://github.com/riatzukiza/utils#readme)
 - [riatzukiza/worker](https://github.com/riatzukiza/worker#readme)
 <!-- END: PROMETHEAN-PACKAGES-READMES -->
-
 
 <!-- READMEFLOW:END -->
