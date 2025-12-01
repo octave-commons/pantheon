@@ -72,8 +72,9 @@ class OpenCodeProvider implements AgentProvider {
         throw new Error('Loaded @opencode-ai/sdk but could not find createOpencodeClient');
       }
 
-      // Prefer default global opencode configuration; API key only needed in CI or custom hosts
-      const client = createOpencodeClient({ apiKey: process.env.OPENCODE_API_KEY });
+      // Prefer default global opencode daemon; fall back to localhost:4096. API key only for CI/custom hosts.
+      const baseUrl = process.env.OPENCODE_BASE_URL || 'http://localhost:4096';
+      const client = createOpencodeClient({ apiKey: process.env.OPENCODE_API_KEY, baseUrl });
 
       // Minimal request: create session then prompt with a text part
       const session = await client.session.create();
