@@ -30,27 +30,31 @@ class OpenAIAgentProvider implements AgentProvider {
   }
 
   async *ask({ prompt, options }: AskRequest): AsyncIterable<string> {
-    // @ts-expect-error Optional dependency resolved at runtime
-    const { Agent, run } = await import('@openai/agents');
+    const { Agent, run } = (await import('@openai/agents')) as any;
 
     const agent = new Agent({
       name: options.agent || 'pantheon-repl',
       instructions: options.system || 'Respond concisely in markdown.',
-    });
-
-    const result = await run(agent, prompt, {
-      stream: true,
       model: options.model,
     });
 
-    const textStream = result.toTextStream({ compatibleWithNodeStreams: false });
+    const result: any = await run(agent, prompt, {
+      stream: true,
+    });
+
+    const textStream: AsyncIterable<any> =
+      typeof result?.toTextStream === 'function'
+        ? result.toTextStream({ compatibleWithNodeStreams: false })
+        : (result as AsyncIterable<any>);
 
     for await (const chunk of textStream) {
       const text = typeof chunk === 'string' ? chunk : chunk.toString();
       yield text;
     }
 
-    await result.completed;
+    if (result?.completed) {
+      await result.completed;
+    }
   }
 }
 
