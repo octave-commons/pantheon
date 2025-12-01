@@ -19,6 +19,7 @@
     "lint": "pnpm exec eslint ."
   },
   "dependencies": {
+    "@openai/agents": "^0.1.9",
     "@promethean-os/pantheon-core": "workspace:*",
     "@promethean-os/pantheon-state": "workspace:*",
     "@promethean-os/pantheon-workflow": "workspace:*",

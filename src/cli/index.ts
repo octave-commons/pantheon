@@ -345,7 +345,7 @@ program
   .description('Run a demo of the Pantheon framework')
   .action(async () => {
     try {
-      console.log('🎭 Pantheon Framework Demo\\n');
+      console.log('🎭 Pantheon Framework Demo\n');
 
       const { orchestrator, adapters } = getSystem();
 
@@ -364,24 +364,39 @@ program
       console.log(`   Created actor: ${actor.id}`);
 
       // Tick the actor
-      console.log('\\n2. Ticking actor...');
+      console.log('\n2. Ticking actor...');
       await orchestrator.tickActor(actor, { userMessage: 'What is the Pantheon framework?' });
       console.log('   Actor tick completed');
 
       // Show final state
       const finalActor = await adapters.actorState.get(actor.id);
-      console.log(`\\n3. Final actor state: ${finalActor?.state}`);
+      console.log(`\n3. Final actor state: ${finalActor?.state}`);
 
       // List all actors
-      console.log('\\n4. All actors:');
+      console.log('\n4. All actors:');
       const allActors = await adapters.actorState.list();
       allActors.forEach((a: any) => {
         console.log(`   - ${a.script.name} (${a.id}): ${a.state}`);
       });
 
-      console.log('\\n✅ Demo completed successfully!');
+      console.log('\n✅ Demo completed successfully!');
     } catch (error) {
       console.error('❌ Demo failed:', error);
+      process.exit(1);
+    }
+  });
+
+// Lisp-style REPL for agents
+program
+  .command('repl')
+  .description('Start a Lisp-style REPL for talking to agents')
+  .action(async () => {
+    try {
+      // @ts-expect-error Dynamic import resolves to compiled repl entrypoint
+      const { startRepl } = await import('../repl.js');
+      await startRepl();
+    } catch (error) {
+      console.error('Error starting REPL:', error);
       process.exit(1);
     }
   });
