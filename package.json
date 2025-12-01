@@ -18,18 +18,21 @@
     "coverage:check": "c8 --config ./c8.config.json --check-coverage ava",
     "lint": "pnpm exec eslint .",
     "cli": "pnpm build && node dist/cli/index.js",
-    "repl": "pnpm build && node dist/cli/index.js repl"
+    "repl": "pnpm build && node dist/cli/index.js repl",
+    "registry": "pnpm build && node dist/registry/server.js"
   },
   "dependencies": {
     "@openai/agents": "^0.1.9",
+    "@opencode-ai/sdk": "^1.0.126",
+    "@promethean-os/lmdb-cache": "workspace:*",
     "@promethean-os/pantheon-core": "workspace:*",
-    "@promethean-os/pantheon-state": "workspace:*",
-    "@promethean-os/pantheon-workflow": "workspace:*",
-    "@promethean-os/pantheon-protocol": "workspace:*",
-    "@promethean-os/pantheon-persistence": "workspace:*",
+    "@promethean-os/pantheon-ecs": "workspace:*",
     "@promethean-os/pantheon-mcp": "workspace:*",
     "@promethean-os/pantheon-orchestrator": "workspace:*",
-    "@promethean-os/pantheon-ecs": "workspace:*",
+    "@promethean-os/pantheon-persistence": "workspace:*",
+    "@promethean-os/pantheon-protocol": "workspace:*",
+    "@promethean-os/pantheon-state": "workspace:*",
+    "@promethean-os/pantheon-workflow": "workspace:*",
     "commander": "^11.1.0",
     "jsonwebtoken": "^9.0.2",
     "zod": "^3.22.4"

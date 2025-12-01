@@ -39,7 +39,9 @@
       "@promethean/test-utils/*": ["../packages/test-utils/dist/*"],
       "@promethean/legacy/*": ["../packages/legacy/*"],
       "@promethean-os/pipeline-core": ["../packages/pipelines/core/src/index.ts"],
-      "@promethean-os/pipeline-core/*": ["../packages/pipelines/core/src/*"]
+      "@promethean-os/pipeline-core/*": ["../packages/pipelines/core/src/*"],
+      "@promethean-os/lmdb-cache": ["../packages/lmdb-cache/src/index.ts"],
+      "@promethean-os/lmdb-cache/*": ["../packages/lmdb-cache/src/*"]
     },
     "types": ["node", "ava"]
   },

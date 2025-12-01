@@ -45,6 +45,8 @@ class OpenAIAgentProvider implements AgentProvider {
       model: options.model,
     });
 
+    await registerWorkspace(options.cwd || process.cwd(), 'openai');
+
     const result: any = await run(agent, prompt, {
       stream: true,
     });
@@ -82,6 +84,8 @@ class OpenCodeProvider implements AgentProvider {
       // Prefer default global opencode daemon; fall back to localhost:4096. API key only for CI/custom hosts.
       const baseUrl = process.env.OPENCODE_BASE_URL || 'http://localhost:4096';
       const client = createOpencodeClient({ apiKey: process.env.OPENCODE_API_KEY, baseUrl });
+
+      await registerWorkspace(options.cwd || process.cwd(), 'opencode');
 
       // Minimal request: create session then prompt with a text part
       const session = await client.session.create();
@@ -196,6 +200,35 @@ function parseAskExpression(input: string): AskCommand {
   };
 }
 
+const REGISTRY_URL = process.env.PANTHEON_REGISTRY_URL || 'http://127.0.0.1:4097';
+
+async function registerWorkspace(path: string, provider: string): Promise<void> {
+  try {
+    await fetch(`${REGISTRY_URL}/workspaces`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path, providers: [provider] }),
+    });
+  } catch {
+    // best-effort; ignore failures for local dev
+  }
+}
+
+async function listWorkspaces(): Promise<string> {
+  const res = await fetch(`${REGISTRY_URL}/workspaces`).catch((err) => {
+    throw new Error(`Workspace registry not reachable at ${REGISTRY_URL}: ${err}`);
+  });
+  if (!res.ok) {
+    throw new Error(`Workspace registry error ${res.status}`);
+  }
+  const json = (await res.json()) as { data?: any[] };
+  const entries = json.data ?? [];
+  if (entries.length === 0) return 'No workspaces registered';
+  return entries
+    .map((w) => `- ${w.path} [providers: ${(w.providers ?? []).join(', ') || 'none'}]`)
+    .join('\n');
+}
+
 function createProvider(name: string): AgentProvider {
   switch (name.toLowerCase()) {
     case 'openai':
@@ -228,6 +261,13 @@ export async function startRepl(): Promise<void> {
     }
 
     try {
+      if (trimmed.startsWith('(workspaces')) {
+        const output = await listWorkspaces();
+        console.log(output);
+        rl.prompt();
+        continue;
+      }
+
       const command = parseAskExpression(trimmed);
       const providerName = command.options.provider || 'openai';
       const provider = createProvider(providerName);

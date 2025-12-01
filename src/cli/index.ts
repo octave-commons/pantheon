@@ -392,11 +392,26 @@ program
   .description('Start a Lisp-style REPL for talking to agents')
   .action(async () => {
     try {
-      // @ts-expect-error Dynamic import resolves to compiled repl entrypoint
       const { startRepl } = await import('../repl.js');
       await startRepl();
     } catch (error) {
       console.error('Error starting REPL:', error);
+      process.exit(1);
+    }
+  });
+
+// Workspace registry server
+program
+  .command('registry')
+  .description('Start the workspace registry server (LMDB-backed)')
+  .option('--port <port>', 'Port to listen on', '4097')
+  .action(async (options: { port: string }) => {
+    try {
+      const { startRegistryServer } = await import('../registry/server.js');
+      const port = parseInt(options.port, 10);
+      startRegistryServer(port);
+    } catch (error) {
+      console.error('Error starting registry server:', error);
       process.exit(1);
     }
   });
