@@ -6,6 +6,9 @@ export type AskOptions = {
   agent?: string;
   model?: string;
   system?: string;
+  instructions?: string[];
+  cwd?: string;
+  environment?: Record<string, string>;
 };
 
 export type AskCommand = {
@@ -31,6 +34,10 @@ class OpenAIAgentProvider implements AgentProvider {
 
   async *ask({ prompt, options }: AskRequest): AsyncIterable<string> {
     const { Agent, run } = (await import('@openai/agents')) as any;
+
+    if (options.environment?.OPENAI_COMPATABLE_API) {
+      process.env.OPENAI_BASE_URL = options.environment.OPENAI_COMPATABLE_API;
+    }
 
     const agent = new Agent({
       name: options.agent || 'pantheon-repl',
@@ -135,37 +142,53 @@ function parseAskExpression(input: string): AskCommand {
     throw new Error('Only (ask ...) expressions are supported');
   }
 
-  const tokens = [...body.matchAll(/"([^"]*)"|:([a-zA-Z0-9_-]+)|'([a-zA-Z0-9_./-]+)/g)];
+  const options: AskOptions = {};
 
-  const promptToken = tokens.find((t) => t[1] !== undefined);
-  const promptText = promptToken?.[1] ?? '';
+  const queryMatch = body.match(/:query\s+"([^"]+)"/i);
+  const promptText = queryMatch?.[1] ?? body.match(/"([^"]+)"/)?.[1] ?? '';
   if (!promptText) {
     throw new Error('Missing question string in ask expression');
   }
 
-  const options: AskOptions = {};
-  tokens.forEach((token, index) => {
-    const key = token[2];
-    const nextValue = tokens[index + 1]?.[3];
-    if (key && nextValue) {
-      switch (key.toLowerCase()) {
-        case 'provider':
-          options.provider = nextValue.toLowerCase();
-          break;
-        case 'agent':
-          options.agent = nextValue;
-          break;
-        case 'model':
-          options.model = nextValue;
-          break;
-        case 'system':
-          options.system = nextValue;
-          break;
-        default:
-          break;
-      }
-    }
-  });
+  const providerMatch =
+    body.match(/:harness\s+'([a-zA-Z0-9_./-]+)/i) || body.match(/:provider\s+'([a-zA-Z0-9_./-]+)/i);
+  if (providerMatch?.[1]) {
+    options.provider = providerMatch[1].toLowerCase();
+  }
+
+  const agentMatch =
+    body.match(/:role\s+'([a-zA-Z0-9_./-]+)/i) || body.match(/:agent\s+'([a-zA-Z0-9_./-]+)/i);
+  if (agentMatch?.[1]) {
+    options.agent = agentMatch[1];
+  }
+
+  const modelMatch = body.match(/:model\s+'([a-zA-Z0-9_./-]+)/i);
+  if (modelMatch?.[1]) {
+    options.model = modelMatch[1];
+  }
+
+  const systemMatch = body.match(/:system\s+"([^"]+)"/i);
+  if (systemMatch?.[1]) {
+    options.system = systemMatch[1];
+  }
+
+  const instructionsMatch = body.match(/:instructions\s+\[(.*?)\]/i);
+  if (instructionsMatch?.[1]) {
+    options.instructions = instructionsMatch[1]
+      .split(/\s+/)
+      .map((s) => s.replace(/^["']|["']$/g, ''))
+      .filter(Boolean);
+  }
+
+  const cwdMatch = body.match(/:cwd\s+"([^"]+)"/i);
+  if (cwdMatch?.[1]) {
+    options.cwd = cwdMatch[1];
+  }
+
+  const envMatch = body.match(/:OPENAI_COMPATABLE_API\s+"([^"]+)"/i);
+  if (envMatch?.[1]) {
+    options.environment = { OPENAI_COMPATABLE_API: envMatch[1] };
+  }
 
   return {
     prompt: promptText,
