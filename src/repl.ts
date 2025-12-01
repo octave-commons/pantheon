@@ -63,61 +63,56 @@ class OpenCodeProvider implements AgentProvider {
     try {
       const moduleName = '@opencode-ai/sdk';
       // Using indirection to avoid type resolution errors when the SDK is not installed yet
-      const opencodeModule = await import(moduleName).catch((err) => {
+      await import(moduleName).catch((err) => {
         throw err;
       });
 
-      const OpencodeSdk: any = (opencodeModule as any).default ?? opencodeModule;
+      const { createOpencodeClient } = (await import('@opencode-ai/sdk/client')) as any;
+      if (typeof createOpencodeClient !== 'function') {
+        throw new Error('Loaded @opencode-ai/sdk but could not find createOpencodeClient');
+      }
 
       // Prefer default global opencode configuration; API key only needed in CI or custom hosts
-      const client =
-        typeof OpencodeSdk === 'function'
-          ? new OpencodeSdk({ apiKey: process.env.OPENCODE_API_KEY })
-          : null;
+      const client = createOpencodeClient({ apiKey: process.env.OPENCODE_API_KEY });
 
-      if (!client) {
-        throw new Error('Loaded @opencode-ai/sdk but could not construct a client');
+      // Minimal request: create session then prompt with a text part
+      const session = await client.session.create();
+      const sessionId =
+        (session as any)?.id || (session as any)?.data?.id || (session as any)?.session?.id;
+      if (!sessionId) {
+        throw new Error('OpenCode session.create() did not return an id');
       }
 
-      if (client.chat?.stream) {
-        const stream: AsyncIterable<any> = await client.chat.stream({
-          agent: options.agent || 'default',
-          model: options.model,
-          messages: [{ role: 'user', content: prompt }],
-        });
+      const promptResult = await client.session.prompt({
+        path: { id: sessionId },
+        body: {
+          agent: options.agent,
+          parts: [{ type: 'text', text: prompt }],
+        },
+      });
 
-        for await (const event of stream) {
-          const content = event?.data?.content || event?.content || event?.delta || '';
-          if (content) {
-            yield typeof content === 'string' ? content : String(content);
-          }
-        }
+      const parts: any[] =
+        (promptResult as any)?.parts ||
+        (promptResult as any)?.data?.parts ||
+        (promptResult as any)?.assistantMessage?.parts ||
+        [];
+
+      if (parts.length === 0) {
+        const fallbackContent =
+          (promptResult as any)?.assistantMessage?.content ||
+          (promptResult as any)?.data?.content ||
+          (promptResult as any)?.content ||
+          JSON.stringify(promptResult);
+        yield typeof fallbackContent === 'string' ? fallbackContent : String(fallbackContent ?? '');
         return;
       }
 
-      if (client.session?.create && client.session?.chat) {
-        const session = await client.session.create();
-        const sessionId =
-          (session as any)?.id || (session as any)?.data?.id || (session as any)?.session?.id;
-        if (!sessionId) {
-          throw new Error('OpenCode client.session.create() did not return an id');
+      for (const part of parts) {
+        const text = part?.text || part?.content || part?.delta;
+        if (text) {
+          yield typeof text === 'string' ? text : String(text);
         }
-
-        const response = await client.session.chat(sessionId, {
-          messages: [{ role: 'user', content: prompt }],
-        });
-
-        const content =
-          (response as any)?.assistantMessage?.content ||
-          (response as any)?.data?.content ||
-          (response as any)?.content ||
-          JSON.stringify(response);
-
-        yield typeof content === 'string' ? content : String(content);
-        return;
       }
-
-      throw new Error('OpenCode client missing chat.stream and session.chat capabilities');
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'Unknown error while using opencode provider';
