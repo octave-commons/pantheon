@@ -16,7 +16,9 @@
     "test": "ava",
     "coverage": "c8 --config ./c8.config.json ava",
     "coverage:check": "c8 --config ./c8.config.json --check-coverage ava",
-    "lint": "pnpm exec eslint ."
+    "lint": "pnpm exec eslint .",
+    "cli": "pnpm build && node dist/cli/index.js",
+    "repl": "pnpm build && node dist/cli/index.js repl"
   },
   "dependencies": {
     "@openai/agents": "^0.1.9",
