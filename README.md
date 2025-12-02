@@ -15,7 +15,7 @@ Pantheon is a modular cognitive architecture that provides:
 
 ## Where to go next
 
-- [Pantheon docs index](../../docs/pantheon-index.md)
+- [Pantheon docs index](pantheon-index.md)
 - [API reference](./docs/API.md)
 - [Pantheon graph pattern](./docs/graph-pattern.md)
 - [Functional migration suite](./docs/functional-migration-guide.md)
@@ -250,6 +250,24 @@ DEFAULT_TEMPERATURE=0.7
 MAX_MESSAGES=20
 SYSTEM_PROMPT="You are a helpful AI assistant."
 ```
+
+### OpenAI harness with Ollama (local)
+
+- Prereqs: `ollama serve` running (defaults to `http://localhost:11434/v1`) and the target model pulled (`ollama run llama3.1` once to download).
+- Set any non-empty `OPENAI_API_KEY` (required by the harness) and either export `OPENAI_BASE_URL=http://localhost:11434/v1` or pass it inline via `:environment { :OPENAI_COMPATABLE_API "http://localhost:11434/v1" }`.
+- REPL example (uses OpenAI harness with local Ollama endpoint):
+
+  ```clojure
+  (ask :query "hello from ollama?"
+       :harness 'openai
+       :model 'llama3.1
+       :role 'opencode/agent-name
+       :instructions ["./packages/*/AGENTS.md"]
+       :cwd "."
+       :environment { :OPENAI_COMPATABLE_API "http://localhost:11434/v1" })
+  ```
+
+- Start the REPL via `pnpm --filter @promethean-os/pantheon repl`, then paste the `(ask ...)` form above. Instructions globs are supported.
 
 ### Configuration Files
 
