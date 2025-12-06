@@ -1,33 +1,40 @@
 import test from 'ava';
-import type { ToolPort, ContextPort, ActorPort, LlmPort } from '../../core/ports.js';
+import type {
+  ToolPort,
+  ContextPort,
+  ActorPort,
+  LlmPort,
+  Message,
+  ContextSource,
+} from '../../core/ports.js';
 
 // Mock implementations for testing
 const createMockToolPort = (): ToolPort => ({
-  execute: async (command: string, args?: Record<string, unknown>) => {
-    return { command, args, result: 'mock_result' };
+  register: () => {},
+  invoke: async (name: string, args: Record<string, unknown>) => {
+    return { name, args, result: 'mock_result' };
   },
 });
 
 const createMockContextPort = (): ContextPort => ({
-  compile: async (_sources: string[], _text: string) => ({
-    id: 'mock-context',
-    sources: _sources,
-    text: _text,
-    compiled: { processed: true },
-    timestamp: Date.now(),
-  }),
-  get: async (_id: string) =>
-    _id === 'existing'
-      ? {
-          id: _id,
-          sources: ['source1'],
-          text: 'Existing context',
-          compiled: { cached: true },
-          timestamp: Date.now(),
-        }
-      : null,
-  save: async (_context) => {
-    // Mock save operation
+  compile: async ({
+    texts = [],
+    sources,
+  }: {
+    texts?: readonly string[];
+    sources: readonly ContextSource[];
+  }): Promise<Message[]> => {
+    const sourceMessages = sources.map((source) => ({
+      role: 'system' as const,
+      content: `source:${source.id}`,
+    }));
+
+    const textMessages = texts.map((text) => ({
+      role: 'user' as const,
+      content: text,
+    }));
+
+    return [...sourceMessages, ...textMessages];
   },
 });
 
@@ -54,26 +61,26 @@ const createMockLlmPort = (): LlmPort => ({
   }),
 });
 
-test('ToolPort execute method', async (t) => {
+test('ToolPort invoke method', async (t) => {
   const toolPort = createMockToolPort();
 
-  const result = await toolPort.execute('test-command', { param: 'value' });
+  const result = await toolPort.invoke('test-command', { param: 'value' });
 
   t.deepEqual(result, {
-    command: 'test-command',
+    name: 'test-command',
     args: { param: 'value' },
     result: 'mock_result',
   });
 });
 
-test('ToolPort execute without args', async (t) => {
+test('ToolPort invoke without args', async (t) => {
   const toolPort = createMockToolPort();
 
-  const result = await toolPort.execute('simple-command');
+  const result = await toolPort.invoke('simple-command', {});
 
   t.deepEqual(result, {
-    command: 'simple-command',
-    args: undefined,
+    name: 'simple-command',
+    args: {},
     result: 'mock_result',
   });
 });
@@ -81,47 +88,18 @@ test('ToolPort execute without args', async (t) => {
 test('ContextPort compile method', async (t) => {
   const contextPort = createMockContextPort();
 
-  const result = await contextPort.compile(['source1', 'source2'], 'Test text');
+  const result = await contextPort.compile({
+    sources: [
+      { id: 'source1', label: 'Source 1' },
+      { id: 'source2', label: 'Source 2' },
+    ],
+    texts: ['Test text'],
+  });
 
-  t.is(result.id, 'mock-context');
-  t.deepEqual(result.sources, ['source1', 'source2']);
-  t.is(result.text, 'Test text');
-  t.deepEqual(result.compiled, { processed: true });
-  t.true(result.timestamp > 0);
-});
-
-test('ContextPort get existing context', async (t) => {
-  const contextPort = createMockContextPort();
-
-  const result = await contextPort.get('existing');
-
-  t.not(result, null);
-  t.is(result?.id, 'existing');
-  t.deepEqual(result?.sources, ['source1']);
-  t.is(result?.text, 'Existing context');
-  t.deepEqual(result?.compiled, { cached: true });
-});
-
-test('ContextPort get non-existing context', async (t) => {
-  const contextPort = createMockContextPort();
-
-  const result = await contextPort.get('non-existing');
-
-  t.is(result, null);
-});
-
-test('ContextPort save method', async (t) => {
-  const contextPort = createMockContextPort();
-
-  const context = {
-    id: 'test-context',
-    sources: ['source1'],
-    text: 'Test context',
-    compiled: { data: 'test' },
-    timestamp: Date.now(),
-  };
-
-  await t.notThrowsAsync(() => contextPort.save(context));
+  t.is(result.length, 3);
+  t.deepEqual(result[0], { role: 'system', content: 'source:source1' });
+  t.deepEqual(result[1], { role: 'system', content: 'source:source2' });
+  t.deepEqual(result[2], { role: 'user', content: 'Test text' });
 });
 
 test('ActorPort create method', async (t) => {

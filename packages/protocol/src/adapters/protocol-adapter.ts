@@ -1,5 +1,5 @@
 /**
- * Agent OS Protocol Adapter - Emergency Crisis Response Edition
+ * Pantheon (formerly Agent OS) Protocol Adapter - Emergency Crisis Response Edition
  *
  * CRITICAL: Accelerated implementation for system crisis coordination
  * Focus: Agent coordination, task prioritization, emergency response
@@ -855,5 +855,5 @@ export const EmergencyCrisisSystem = {
 };
 
 // CRITICAL: System is ready for emergency coordination
-console.log('[CRITICAL] Agent OS Emergency Crisis Response System initialized');
+console.log('[CRITICAL] Pantheon (formerly Agent OS) Emergency Crisis Response System initialized');
 console.log('[CRITICAL] Ready to handle system emergencies and agent coordination');

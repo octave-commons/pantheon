@@ -97,39 +97,37 @@ interface Message {
 
 ```typescript
 interface ToolPort {
-  execute(command: string, args?: Record<string, unknown>): Promise<unknown>;
-  list?(): Promise<string[]>;
   register?(tool: MCPTool): void;
-  getSchema?(toolName: string): Promise<any>;
+  invoke(name: string, args: Record<string, unknown>): Promise<unknown>;
 }
 ```
 
-**Description**: Interface for executing tools and commands.
+**Description**: Interface for registering and invoking tools.
 
 **Methods**:
 
-- `execute(command, args?)`: Execute a tool with given arguments
-- `list()?`: List available tools (optional)
+- `invoke(name, args)`: Execute a tool with given arguments
 - `register?(tool)`: Register a new tool (optional)
-- `getSchema?(toolName)`: Get schema for a specific tool (optional)
 
 ### ContextPort
 
 ```typescript
 interface ContextPort {
-  compile(sources: string[], text: string): Promise<Context>;
-  get(id: string): Promise<Context | null>;
-  save(context: Context): Promise<void>;
+  compile(opts: {
+    texts?: readonly string[];
+    sources: readonly ContextSource[];
+    recentLimit?: number;
+    queryLimit?: number;
+    limit?: number;
+  }): Promise<Message[]>;
 }
 ```
 
-**Description**: Interface for managing context compilation and storage.
+**Description**: Interface for compiling context into message lists.
 
 **Methods**:
 
-- `compile(sources, text)`: Compile context from sources and text
-- `get(id)`: Retrieve a context by ID
-- `save(context)`: Save a context to storage
+- `compile(opts)`: Compile messages from sources plus optional inline texts with optional limits
 
 ### ActorPort
 
@@ -183,45 +181,52 @@ function makeContextAdapter(): ContextPort;
 **Example**:
 
 ```typescript
-import { makeContextAdapter } from '@promethean-os/pantheon-fp';
+import { makeContextAdapter, type ContextSource } from '@promethean-os/pantheon';
 
 const contextAdapter = makeContextAdapter();
 
+const sources: ContextSource[] = [
+  { id: 'sessions', label: 'Sessions' },
+  { id: 'agent-tasks', label: 'Agent Tasks' },
+];
+
 // Compile context
-const context = await contextAdapter.compile(
-  ['sessions', 'agent-tasks'],
-  'Hello world, I am an AI agent',
-);
+const messages = await contextAdapter.compile({
+  sources,
+  texts: ['Hello world, I am an AI agent'],
+  limit: 20,
+});
 
-console.log('Context ID:', context.id);
-
-// Retrieve context
-const retrieved = await contextAdapter.get(context.id);
-console.log('Retrieved context:', retrieved);
-
-// Save context
-await contextAdapter.save(context);
+console.log('Compiled messages:', messages.length);
 ```
 
 ### Context Compilation
 
 ```typescript
-const context = await contextAdapter.compile(
-  ['sessions', 'agent-tasks', 'user-preferences'],
-  `User wants to create a new AI assistant with the following requirements:
-   - Natural language processing
-   - Memory management
-   - Task automation
-   - User preference learning`,
-);
+const messages = await contextAdapter.compile({
+  sources: [
+    { id: 'sessions', label: 'sessions' },
+    { id: 'agent-tasks', label: 'agent-tasks' },
+    { id: 'user-preferences', label: 'user-preferences' },
+  ],
+  texts: [
+    `User wants to create a new AI assistant with the following requirements:
+     - Natural language processing
+     - Memory management
+     - Task automation
+     - User preference learning`,
+  ],
+  limit: 50,
+});
 ```
 
 **Parameters**:
 
-- `sources`: Array of source identifiers
-- `text`: Text content to compile into context
+- `sources`: Array of context source descriptors
+- `texts`: Optional inline text messages
+- `limit/queryLimit/recentLimit`: Optional limits on returned messages
 
-**Returns**: Promise resolving to a `Context` object
+**Returns**: Promise resolving to an array of `Message` objects
 
 ## Actor Management
 
@@ -238,7 +243,7 @@ function makeActorAdapter(): ActorPort;
 **Example**:
 
 ```typescript
-import { makeActorAdapter, type ActorConfig } from '@promethean-os/pantheon-fp';
+import { makeActorAdapter, type ActorConfig } from '@promethean-os/pantheon';
 
 const actorAdapter = makeActorAdapter();
 
@@ -280,7 +285,7 @@ import {
   makeLLMActorAdapter,
   makeOpenAIAdapter,
   type LLMActorConfig,
-} from '@promethean-os/pantheon-fp';
+} from '@promethean-os/pantheon';
 
 const llmAdapter = makeOpenAIAdapter({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -371,7 +376,7 @@ interface OpenAIAdapterConfig {
 **Example**:
 
 ```typescript
-import { makeOpenAIAdapter } from '@promethean-os/pantheon-fp';
+import { makeOpenAIAdapter } from '@promethean-os/pantheon';
 
 const llmAdapter = makeOpenAIAdapter({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -641,16 +646,18 @@ export interface Message {
 
 // Port Interfaces
 export interface ToolPort {
-  execute(command: string, args?: Record<string, unknown>): Promise<unknown>;
-  list?(): Promise<string[]>;
   register?(tool: MCPTool): void;
-  getSchema?(toolName: string): Promise<any>;
+  invoke(name: string, args: Record<string, unknown>): Promise<unknown>;
 }
 
 export interface ContextPort {
-  compile(sources: string[], text: string): Promise<Context>;
-  get(id: string): Promise<Context | null>;
-  save(context: Context): Promise<void>;
+  compile(opts: {
+    texts?: readonly string[];
+    sources: readonly ContextSource[];
+    recentLimit?: number;
+    queryLimit?: number;
+    limit?: number;
+  }): Promise<Message[]>;
 }
 
 export interface ActorPort {

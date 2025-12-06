@@ -15,7 +15,7 @@ Pantheon is a modular cognitive architecture that provides:
 
 ## Where to go next
 
-- [Pantheon docs index](pantheon-index.md)
+- [Docs directory](./docs)
 - [API reference](./docs/API.md)
 - [Pantheon graph pattern](./docs/graph-pattern.md)
 - [Functional migration suite](./docs/functional-migration-guide.md)
@@ -194,29 +194,28 @@ interface ToolPort {
 ```
 packages/pantheon/
 ├── src/
-│   ├── actors/
-│   │   ├── index.ts      # Actor creation utilities
-│   │   └── llm-actor.ts  # LLM actor implementation
+│   ├── actions/
 │   ├── adapters/
-│   │   └── index.ts      # Adapter implementations
 │   ├── cli/
-│   │   └── index.ts      # CLI interface
+│   ├── core/
+│   ├── llm/
+│   ├── registry/
+│   ├── serializers/
 │   ├── utils/
-│   │   └── index.ts      # Utility functions
-│   └── index.ts          # Main exports
+│   └── index.ts
 ├── package.json
 └── tsconfig.json
 
 packages/pantheon-core/
 ├── src/
-│   ├── core/
-│   │   ├── ports.ts      # Core port interfaces
-│   │   ├── types.ts      # Type definitions
-│   │   ├── context.ts    # Context adapter
-│   │   ├── actors.ts     # Actor adapter
-│   │   ├── orchestrator.ts
-│   │   └── adapters.ts   # In-memory implementations
-│   └── index.ts          # Core exports
+│   ├── core/             # Ports, types, orchestrator, adapters
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+
+packages/pantheon-ecs/
+├── src/
+│   └── index.ts          # ECS helpers
 ├── package.json
 └── tsconfig.json
 
@@ -226,9 +225,33 @@ packages/pantheon-mcp/
 ├── package.json
 └── tsconfig.json
 
-packages/pantheon-llm-openai/
+packages/pantheon-orchestrator/
 ├── src/
-│   └── index.ts          # OpenAI LLM adapter
+│   └── index.ts          # Orchestrator wrapper
+├── package.json
+└── tsconfig.json
+
+packages/pantheon-persistence/
+├── src/
+│   └── index.ts          # Persistence adapter
+├── package.json
+└── tsconfig.json
+
+packages/pantheon-protocol/
+├── src/
+│   └── index.ts          # Protocol helpers
+├── package.json
+└── tsconfig.json
+
+packages/pantheon-state/
+├── src/
+│   └── index.ts          # State management utilities
+├── package.json
+└── tsconfig.json
+
+packages/pantheon-workflow/
+├── src/
+│   └── index.ts          # Workflow helpers
 ├── package.json
 └── tsconfig.json
 ```
@@ -402,7 +425,7 @@ mcpAdapter.register?.(customTool);
 ### Context Compilation with Multiple Sources
 
 ```typescript
-import { makeContextAdapter } from '@promethean-os/pantheon-fp';
+import { makeContextAdapter } from '@promethean-os/pantheon';
 
 const contextAdapter = makeContextAdapter();
 
@@ -499,7 +522,7 @@ app.listen(3000, () => {
 
 ```typescript
 import { WebSocketServer } from 'ws';
-import { makeLLMActorAdapter, makeOpenAIAdapter } from '@promethean-os/pantheon-fp';
+import { makeLLMActorAdapter, makeOpenAIAdapter } from '@promethean-os/pantheon';
 
 const wss = new WebSocketServer({ port: 8080 });
 const llmAdapter = makeOpenAIAdapter({
