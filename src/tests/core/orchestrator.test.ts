@@ -2,25 +2,40 @@ import test from 'ava';
 
 import { makeOrchestrator } from '../../core/orchestrator.js';
 import type { OrchestratorDeps } from '../../core/orchestrator.js';
-import type { ActorConfig, Context } from '../../core/types.js';
+import type { ActorConfig, Message } from '../../core/types.js';
 
 // Mock implementations
 const createMockToolPort = () => ({
-  execute: async (command: string, args?: Record<string, unknown>) => {
-    return { command, args, executed: true };
-  },
+  invoke: async (name: string, args: Record<string, unknown>) => ({
+    name,
+    args,
+    executed: true,
+  }),
 });
 
 const createMockContextPort = () => ({
-  compile: async (sources: string[], text: string): Promise<Context> => ({
-    id: 'test-context',
+  compile: async ({
     sources,
-    text,
-    compiled: { processed: true },
-    timestamp: Date.now(),
-  }),
-  get: async () => null,
-  save: async () => {},
+    texts = [],
+  }: {
+    texts?: readonly string[];
+    sources: readonly { id: string; label?: string }[];
+    recentLimit?: number;
+    queryLimit?: number;
+    limit?: number;
+  }): Promise<Message[]> => {
+    const sourceMessages = sources.map((source) => ({
+      role: 'system' as const,
+      content: source.label ?? source.id,
+    }));
+
+    const textMessages = texts.map((text) => ({
+      role: 'user' as const,
+      content: text,
+    }));
+
+    return [...sourceMessages, ...textMessages];
+  },
 });
 
 const createMockActorPort = () => ({
@@ -59,7 +74,7 @@ test('orchestrator.processCommand delegates to toolPort', async (t) => {
   const result = await orchestrator.processCommand('test-command', { param: 'value' });
 
   t.deepEqual(result, {
-    command: 'test-command',
+    name: 'test-command',
     args: { param: 'value' },
     executed: true,
   });
@@ -77,8 +92,8 @@ test('orchestrator.processCommand without args', async (t) => {
   const result = await orchestrator.processCommand('simple-command');
 
   t.deepEqual(result, {
-    command: 'simple-command',
-    args: undefined,
+    name: 'simple-command',
+    args: {},
     executed: true,
   });
 });
@@ -94,11 +109,9 @@ test('orchestrator.compileContext delegates to contextPort', async (t) => {
   const orchestrator = makeOrchestrator(deps);
   const result = await orchestrator.compileContext(['source1'], 'test text');
 
-  t.is(result.id, 'test-context');
-  t.deepEqual(result.sources, ['source1']);
-  t.is(result.text, 'test text');
-  t.deepEqual(result.compiled, { processed: true });
-  t.true(result.timestamp > 0);
+  t.is(result.length, 2);
+  t.deepEqual(result[0], { role: 'system', content: 'source1' });
+  t.deepEqual(result[1], { role: 'user', content: 'test text' });
 });
 
 test('orchestrator.tickActor delegates to actorPort', async (t) => {

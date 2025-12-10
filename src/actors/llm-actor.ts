@@ -65,18 +65,19 @@ export function makeLLMActorAdapter(): ActorPort & {
       actors.set(actorId, actor);
     },
 
-    async create(config: LLMActorConfig): Promise<string> {
+    async create(config: ActorConfig): Promise<string> {
+      const llmConfig = config as LLMActorConfig;
       const id = `llm-actor_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
       const actor: Actor & { config: LLMActorConfig; messages: Message[] } = {
         id,
-        config,
-        state: null,
+        config: llmConfig,
+        state: 'idle',
         lastTick: Date.now(),
         messages: [],
       };
 
       actors.set(id, actor);
-      console.log(`Created LLM actor ${id} with model: ${config.parameters.model || 'default'}`);
+      console.log(`Created LLM actor ${id} with model: ${llmConfig.parameters.model || 'default'}`);
 
       return id;
     },

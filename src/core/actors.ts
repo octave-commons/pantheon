@@ -23,7 +23,7 @@ export function makeActorAdapter(): ActorPort {
       const actor: Actor = {
         id,
         config,
-        state: null,
+        state: 'idle',
         lastTick: Date.now(),
       };
 
