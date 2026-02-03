@@ -23,7 +23,7 @@
     "lint": "pnpm exec eslint ."
   },
   "dependencies": {
-    "@promethean-os/pantheon-core": "workspace:*",
+    "@promethean-os/pantheon-core": "1.0.0",
     "openai": "^4.20.1"
   },
   "devDependencies": {
