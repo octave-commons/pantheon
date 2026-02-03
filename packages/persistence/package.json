@@ -23,8 +23,8 @@
     "lint": "pnpm exec eslint ."
   },
   "dependencies": {
-    "@promethean-os/persistence": "workspace:*",
-    "@promethean-os/pantheon-core": "workspace:*"
+    "@promethean-os/persistence": "0.1.0",
+    "@promethean-os/pantheon-core": "1.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

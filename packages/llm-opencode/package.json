@@ -1,7 +1,7 @@
 {
-  "name": "@promethean-os/pantheon-llm-claude",
+  "name": "@promethean-os/pantheon-llm-opencode",
   "version": "0.1.0",
-  "description": "Pantheon LLM adapter for Anthropic Claude API",
+  "description": "Pantheon LLM adapter for OpenCode client",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@promethean-os/pantheon-core": "1.0.0",
-    "@anthropic-ai/sdk": "^0.24.3"
+    "@promethean-os/opencode-client": "1.0.2"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
