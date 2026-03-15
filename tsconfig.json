@@ -43,7 +43,7 @@
       "@promethean-os/lmdb-cache": ["../packages/lmdb-cache/src/index.ts"],
       "@promethean-os/lmdb-cache/*": ["../packages/lmdb-cache/src/*"]
     },
-    "types": ["node", "ava"]
+    "types": ["node"]
   },
   "include": ["src/**/*"],
   "exclude": ["dist", "node_modules", "packages/**"]
