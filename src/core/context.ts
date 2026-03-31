@@ -1,32 +1,22 @@
-import type { ContextPort, Context } from './ports.js';
+/**
+ * Simple in-memory context adapter
+ */
+import type { ContextPort, ContextSource, Message } from './ports.js';
 
 export function makeContextAdapter(): ContextPort {
-  // Create a simple in-memory store for now since we need collections
-  const contexts = new Map<string, Context>();
-
   return {
-    async compile(sources: string[], text: string): Promise<Context> {
-      const id = `ctx_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
-      const compiled = { sources, text, processed: true };
+    async compile({ texts = [], sources, limit, recentLimit, queryLimit }): Promise<Message[]> {
+      const sourceMessages = sources.map((source: ContextSource) => ({
+        role: 'system' as const,
+        content: source.label ?? source.id,
+      }));
 
-      const context: Context = {
-        id,
-        sources,
-        text,
-        compiled,
-        timestamp: Date.now(),
-      };
+      const textMessages = texts.map((text) => ({ role: 'user' as const, content: text }));
 
-      contexts.set(id, context);
-      return context;
-    },
+      const messages = [...sourceMessages, ...textMessages];
+      const cap = limit ?? queryLimit ?? recentLimit ?? messages.length;
 
-    async get(id: string): Promise<Context | null> {
-      return contexts.get(id) || null;
-    },
-
-    async save(context: Context): Promise<void> {
-      contexts.set(context.id, context);
+      return messages.slice(-cap);
     },
   };
 }

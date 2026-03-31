@@ -2,7 +2,7 @@
  * Agent Coordination System Types
  *
  * Unified type system for agent instance management, task assignment,
- * and real-time coordination in the Promethean Agent OS.
+ * and real-time coordination in Pantheon (formerly called Agent OS).
  *
  * We only expose the base agent instance primitives at the top level to
  * avoid duplicate symbol collisions across the more specialized modules.

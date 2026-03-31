@@ -1,8 +1,8 @@
 /**
- * Agent OS Core Message Protocol - Type Definitions
+ * Pantheon (formerly Agent OS) Core Message Protocol - Type Definitions
  *
  * This file contains the complete TypeScript interface definitions
- * for the Agent OS Core Message Protocol.
+ * for the Pantheon Core Message Protocol.
  */
 
 import { z } from 'zod';

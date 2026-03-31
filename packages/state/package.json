@@ -1,7 +1,7 @@
 {
   "name": "@promethean-os/pantheon-state",
   "version": "0.1.0",
-  "description": "Pantheon STATE Management System with functional façade for event sourcing and snapshots (not conversation context - use @promethean-os/persistence for that)",
+  "description": "Pantheon STATE Management System with functional fa\u00e7ade for event sourcing and snapshots (not conversation context - use @promethean-os/persistence for that)",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@promethean-os/level-cache": "workspace:*",
+    "@promethean-os/level-cache": "0.2.0",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
     "uuid": "^9.0.1",

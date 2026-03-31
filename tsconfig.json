@@ -16,6 +16,7 @@
     "strict": true,
     "allowArbitraryExtensions": false,
     "allowImportingTsExtensions": false,
+    "composite": true,
     "declaration": true,
     "declarationMap": true,
     "importHelpers": false,
@@ -31,14 +32,19 @@
     "target": "esnext",
     "useDefineForClassFields": true,
     "baseUrl": ".",
+    "rootDir": "src",
+    "outDir": "dist",
     "paths": {
       "@shared/ts/*": ["../shared/ts/dist/*"],
       "@promethean/test-utils/*": ["../packages/test-utils/dist/*"],
       "@promethean/legacy/*": ["../packages/legacy/*"],
       "@promethean-os/pipeline-core": ["../packages/pipelines/core/src/index.ts"],
-      "@promethean-os/pipeline-core/*": ["../packages/pipelines/core/src/*"]
+      "@promethean-os/pipeline-core/*": ["../packages/pipelines/core/src/*"],
+      "@promethean-os/lmdb-cache": ["../packages/lmdb-cache/src/index.ts"],
+      "@promethean-os/lmdb-cache/*": ["../packages/lmdb-cache/src/*"]
     },
-    "types": ["node", "ava"]
+    "types": ["node"]
   },
-  "exclude": ["../**/dist", "../**/node_modules"]
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules", "packages/**"]
 }
