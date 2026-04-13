@@ -53,14 +53,16 @@ test('Message interface validation', (t) => {
   const message: Message = {
     id: 'message-789',
     type: 'user',
+    role: 'user',
     content: 'Hello world',
     timestamp: Date.now(),
   };
 
   t.is(message.id, 'message-789');
   t.is(message.type, 'user');
+  t.is(message.role, 'user');
   t.is(message.content, 'Hello world');
-  t.true(message.timestamp > 0);
+  t.true((message.timestamp ?? 0) > 0);
 });
 
 test('Actor type validation', (t) => {
@@ -77,7 +79,7 @@ test('Actor type validation', (t) => {
 });
 
 test('Actor state validation', (t) => {
-  const validStates = ['running', 'idle', 'completed', 'failed'];
+  const validStates: Actor['state'][] = ['running', 'idle', 'completed', 'failed'];
 
   validStates.forEach((state) => {
     const actor: Actor = {

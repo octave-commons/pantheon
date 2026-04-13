@@ -1,4 +1,4 @@
 /**
  * Protocol exports for Pantheon
  */
-export * from '../protocol/dist/index.js';
+export * from '@promethean-os/pantheon-protocol';

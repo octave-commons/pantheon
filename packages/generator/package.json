@@ -6,12 +6,12 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "shadow-cljs release",
+    "build": "echo \"skip pantheon-generator build (no shadow-cljs build configured)\"",
     "dev": "shadow-cljs watch",
     "test": "shadow-cljs compile test && node out/test.js"
   },
   "dependencies": {
-    "@promethean-os/pantheon-core": "workspace:*"
+    "@promethean-os/pantheon-core": "1.0.0"
   },
   "devDependencies": {
     "shadow-cljs": "^2.25.8"

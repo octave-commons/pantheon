@@ -1,45 +1,31 @@
-export interface ToolPort {
-  execute(command: string, args?: Record<string, unknown>): Promise<unknown>;
-}
+import type { Actor, ActorConfig, ActorState, Message, ContextSource } from './types.js';
 
 export interface ContextPort {
-  compile(sources: string[], text: string): Promise<Context>;
-  get(id: string): Promise<Context | null>;
-  save(context: Context): Promise<void>;
+  compile: (opts: {
+    texts?: readonly string[];
+    sources: readonly ContextSource[];
+    recentLimit?: number;
+    queryLimit?: number;
+    limit?: number;
+  }) => Promise<Message[]>;
 }
 
-export interface ActorPort {
-  tick(actorId: string): Promise<void>;
-  create(config: ActorConfig): Promise<string>;
-  get(id: string): Promise<Actor | null>;
+export interface ToolPort {
+  register?: (tool: unknown) => void;
+  invoke: (name: string, args: Record<string, unknown>) => Promise<unknown>;
 }
 
 export interface LlmPort {
-  complete(messages: Message[], opts?: { model?: string; temperature?: number }): Promise<Message>;
+  complete: (
+    messages: Message[],
+    opts?: { model?: string; temperature?: number },
+  ) => Promise<Message>;
 }
 
-export interface Message {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
+export interface ActorPort {
+  tick: (actorId: string) => Promise<void>;
+  create: (config: ActorConfig) => Promise<string>;
+  get: (id: string) => Promise<Actor | null>;
 }
 
-export interface Context {
-  id: string;
-  sources: string[];
-  text: string;
-  compiled: unknown;
-  timestamp: number;
-}
-
-export interface Actor {
-  id: string;
-  config: ActorConfig;
-  state: unknown;
-  lastTick: number;
-}
-
-export interface ActorConfig {
-  name: string;
-  type: 'llm' | 'tool' | 'composite';
-  parameters: Record<string, unknown>;
-}
+export type { Actor, ActorConfig, ActorState, Message, ContextSource };

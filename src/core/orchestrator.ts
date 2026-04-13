@@ -1,5 +1,8 @@
+/**
+ * Minimal orchestrator wiring for the legacy core surface.
+ */
 import type { ToolPort, ContextPort, ActorPort } from './ports.js';
-import type { Actor, Context } from './types.js';
+import type { Actor } from './types.js';
 
 export interface OrchestratorDeps {
   toolPort: ToolPort;
@@ -12,11 +15,14 @@ export function makeOrchestrator(deps: OrchestratorDeps) {
 
   return {
     async processCommand(command: string, args?: Record<string, unknown>): Promise<unknown> {
-      return await toolPort.execute(command, args);
+      return await toolPort.invoke(command, args ?? {});
     },
 
-    async compileContext(sources: string[], text: string): Promise<Context> {
-      return await contextPort.compile(sources, text);
+    async compileContext(sources: string[], text: string) {
+      return await contextPort.compile({
+        sources: sources.map((id) => ({ id, label: id })),
+        texts: [text],
+      });
     },
 
     async tickActor(actorId: string): Promise<void> {
