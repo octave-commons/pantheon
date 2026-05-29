@@ -1,3 +1,17 @@
+---
+uuid: "orgs-octave-commons-pantheon-kanban-orgs-octave-commons-pantheon-spec-repl-ask-opencode-md"
+title: "Pantheon REPL ask compatibility plan"
+status: incoming
+priority: P3
+labels: ["specs", "migrated-spec"]
+created_at: "2026-05-29T04:01:09.489Z"
+source: "orgs/octave-commons/pantheon/spec/repl-ask-opencode.md"
+category: "specs"
+---
+
+> Source: `orgs/octave-commons/pantheon/spec/repl-ask-opencode.md`
+> Migrated-to-kanban: `orgs/octave-commons/pantheon/kanban/repl-ask-opencode.md`
+
 # Pantheon REPL ask compatibility plan
 
 ## Prompt summary

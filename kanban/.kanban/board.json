@@ -1,0 +1,93 @@
+{
+  "generatedAt": "2026-05-29T04:01:10.233Z",
+  "totalTasks": 1,
+  "columns": [
+    {
+      "status": "icebox",
+      "title": "Icebox",
+      "taskCount": 0,
+      "tasks": []
+    },
+    {
+      "status": "incoming",
+      "title": "Incoming",
+      "taskCount": 1,
+      "tasks": [
+        {
+          "uuid": "orgs-octave-commons-pantheon-kanban-orgs-octave-commons-pantheon-spec-repl-ask-opencode-md",
+          "title": "Pantheon REPL ask compatibility plan",
+          "slug": "pantheon-repl-ask-compatibility-plan",
+          "status": "incoming",
+          "priority": "P3",
+          "labels": [
+            "specs",
+            "migrated-spec"
+          ],
+          "createdAt": "2026-05-29T04:01:09.489Z",
+          "content": "> Source: `orgs/octave-commons/pantheon/spec/repl-ask-opencode.md`\n> Migrated-to-kanban: `orgs/octave-commons/pantheon/kanban/repl-ask-opencode.md`\n\n# Pantheon REPL ask compatibility plan\n\n## Prompt summary\n\n- Ensure Pantheon Lisp REPL `(ask ...)` works with both `opencode` and `openai` harnesses using the same agent instruction files.\n- Support OpenAI-compatible endpoints (zen) via environment map and use AGENTS.md-style instructions for both harnesses.\n- Add e2e tests covering the sample forms provided in the request.\n\n## Relevant code & docs\n\n- `src/repl.ts` lines ~1-210: ask parsing, provider selection, openai/opencode implementations.\n- `README.md` lines ~1-850: project overview and CLI references.\n- AGENTS docs: `./AGENTS.md` and package-specific `AGENTS.md` patterns referenced in instructions.\n\n## Existing issues / PRs\n\n- None observed locally.\n\n## Requirements\n\n- Parse `:environment { :OPENAI_COMPATABLE_API \"...\" }` in `(ask ...)` forms.\n- Load instruction files (including globs like `./packages/*/AGENTS.md`) and apply them consistently for both `opencode` and `openai` harnesses.\n- Allow OpenAI harness to use OpenAI-compatible endpoint (zen) through the same ask form.\n- Provide end-to-end tests that execute the two sample `(ask ...)` expressions without hitting real services (mocked providers) and verify streaming output handling.\n\n## Definition of done\n\n- REPL ask parser and providers handle environment map and instruction files; OpenAI provider uses compatible base URL when provided.\n- Instructions from files are combined into the agent/system text for both harnesses.\n- Two new AVA e2e tests cover opencode and openai harness usage with the provided sample forms and pass with mocked dependencies.\n- Build/tests succeed locally (or documented if not run).\n\n## Change log\n\n- Added instruction glob loading and environment parsing to `src/repl.ts` for opencode/openai harnesses.\n- Introduced injectable provider overrides plus `executeAsk` helper for testability.\n- Added AVA E2E coverage for opencode and openai harness flows (including instruction glob patterns) in `src/tests/repl/ask-e2e.test.ts`.\n- Documented how to run the OpenAI harness against a local Ollama endpoint in `README.md`.\n- Adjusted AVA config to treat experimental packages as roots and added entrypoint smoke test to improve coverage and fix `pnpm --filter @promethean-os/pantheon coverage`.",
+          "sourcePath": "/home/err/devel/orgs/octave-commons/pantheon/kanban/repl-ask-opencode.md"
+        }
+      ]
+    },
+    {
+      "status": "accepted",
+      "title": "Accepted",
+      "taskCount": 0,
+      "tasks": []
+    },
+    {
+      "status": "breakdown",
+      "title": "Breakdown",
+      "taskCount": 0,
+      "tasks": []
+    },
+    {
+      "status": "blocked",
+      "title": "Blocked",
+      "taskCount": 0,
+      "tasks": []
+    },
+    {
+      "status": "ready",
+      "title": "Ready",
+      "taskCount": 0,
+      "tasks": []
+    },
+    {
+      "status": "todo",
+      "title": "Todo",
+      "taskCount": 0,
+      "tasks": []
+    },
+    {
+      "status": "in_progress",
+      "title": "In Progress",
+      "taskCount": 0,
+      "tasks": []
+    },
+    {
+      "status": "review",
+      "title": "Review",
+      "taskCount": 0,
+      "tasks": []
+    },
+    {
+      "status": "document",
+      "title": "Document",
+      "taskCount": 0,
+      "tasks": []
+    },
+    {
+      "status": "done",
+      "title": "Done",
+      "taskCount": 0,
+      "tasks": []
+    },
+    {
+      "status": "rejected",
+      "title": "Rejected",
+      "taskCount": 0,
+      "tasks": []
+    }
+  ]
+}
