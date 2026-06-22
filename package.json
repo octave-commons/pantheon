@@ -44,7 +44,7 @@
     "typescript": "^5.3.3"
   },
   "peerDependencies": {
-    "@promethean-os/persistence": "workspace:*"
+    "@promethean-os/pantheon-persistence": "workspace:*"
   },
   "license": "GPL-3.0-only",
   "engines": {
